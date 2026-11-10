@@ -31,7 +31,17 @@
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_generico">Ocurrió un error, inténtalo de nuevo</string>
 
-    <!-- Pantalla temporal -->
-    <string name="sesion_iniciada">Sesión iniciada correctamente</string>
+    <!-- Mapa -->
+    <string name="mapa_titulo">Mapa en vivo</string>
+    <string name="estado_conectado">Conectado</string>
+    <string name="estado_desconectado">Desconectado</string>
+    <string name="marcador_tu">Tú</string>
+    <string name="usuarios_en_linea">Usuarios en línea: %1$d</string>
+    <string name="mapa_desconectado_hint">Activa el switch para compartir tu ubicación</string>
+    <string name="permiso_ubicacion_denegado">Se necesita el permiso de ubicación para conectarte</string>
+    <string name="gps_desactivado">Activa la ubicación (GPS) del dispositivo</string>
+
+    <!-- Menú -->
+    <string name="cd_menu">Más opciones</string>
     <string name="menu_cerrar_sesion">Cerrar sesión</string>
 </resources>
