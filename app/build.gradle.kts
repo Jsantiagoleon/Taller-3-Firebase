@@ -15,7 +15,7 @@ val localProps = Properties().apply {
 android {
     namespace = "com.example.tallerfirebase"
     compileSdk {
-        version = release(36) {
+        version = release(37) {
             minorApiLevel = 1
         }
     }
