@@ -24,7 +24,7 @@ import com.example.tallerfirebase.R
 import com.example.tallerfirebase.data.model.MapPoint
 import com.example.tallerfirebase.data.model.User
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.XYZTileSource
+import org.osmdroid.tileprovider.tilesource.XYTileSource
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
@@ -37,7 +37,7 @@ private val DEFAULT_CENTER = GeoPoint(4.6286, -74.0646) // Pontificia Universida
 private const val MAP_ATTRIBUTION = "© OpenStreetMap contributors © CARTO"
 
 // Mapas de CARTO (datos de OpenStreetMap): gratis y sin API key. Uno claro y uno oscuro.
-private fun cartoTileSource(name: String, style: String) = XYZTileSource(
+private fun cartoTileSource(name: String, style: String) = XYTileSource(
     name, 0, 20, 256, ".png",
     arrayOf(
         "https://a.basemaps.cartocdn.com/rastertiles/$style/",
