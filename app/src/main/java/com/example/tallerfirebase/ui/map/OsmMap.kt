@@ -24,8 +24,9 @@ import com.example.tallerfirebase.R
 import com.example.tallerfirebase.data.model.MapPoint
 import com.example.tallerfirebase.data.model.User
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.XYTileSource
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.util.MapTileIndex
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.CopyrightOverlay
@@ -34,21 +35,25 @@ import org.osmdroid.views.overlay.Marker
 private const val DEFAULT_ZOOM = 17.0
 private const val ME_ID = "me"
 private val DEFAULT_CENTER = GeoPoint(4.6286, -74.0646) // Pontificia Universidad Javeriana, Bogotá
-private const val MAP_ATTRIBUTION = "© OpenStreetMap contributors © CARTO"
+private const val MAP_ATTRIBUTION = "Tiles © Esri"
+private const val ESRI_BASE_URL = "https://server.arcgisonline.com/ArcGIS/rest/services/"
 
-// Mapas de CARTO (datos de OpenStreetMap): gratis y sin API key. Uno claro y uno oscuro.
-private fun cartoTileSource(name: String, style: String) = XYTileSource(
-    name, 0, 20, 256, ".png",
-    arrayOf(
-        "https://a.basemaps.cartocdn.com/rastertiles/$style/",
-        "https://b.basemaps.cartocdn.com/rastertiles/$style/",
-        "https://c.basemaps.cartocdn.com/rastertiles/$style/"
-    ),
+// Mapas de Esri (ArcGIS Online): gratis y sin API key. Uno claro y uno oscuro.
+// Esri usa el orden zoom/y/x en la URL, por eso se sobrescribe getTileURLString.
+private class EsriTileSource(name: String, service: String, maxZoom: Int) : OnlineTileSourceBase(
+    name, 0, maxZoom, 256, "",
+    arrayOf("$ESRI_BASE_URL$service/MapServer/tile/"),
     MAP_ATTRIBUTION
-)
+) {
+    override fun getTileURLString(pMapTileIndex: Long): String =
+        baseUrl +
+            MapTileIndex.getZoom(pMapTileIndex) + "/" +
+            MapTileIndex.getY(pMapTileIndex) + "/" +
+            MapTileIndex.getX(pMapTileIndex)
+}
 
-private val LIGHT_TILES = cartoTileSource("CartoVoyager", "voyager")
-private val DARK_TILES = cartoTileSource("CartoDarkMatter", "dark_all")
+private val LIGHT_TILES = EsriTileSource("EsriStreets", "World_Street_Map", 19)
+private val DARK_TILES = EsriTileSource("EsriDarkGray", "Canvas/World_Dark_Gray_Base", 16)
 
 // Datos que necesita un marcador en el mapa
 private data class MarkerData(
