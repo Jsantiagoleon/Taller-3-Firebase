@@ -1,3 +1,37 @@
 <resources>
-    <string name="app_name">Taller firebase</string>
+    <string name="app_name">Taller Firebase</string>
+
+    <!-- Login / Registro -->
+    <string name="login_titulo">Bienvenido</string>
+    <string name="login_subtitulo">Inicia sesión para ver a otros usuarios en el mapa</string>
+    <string name="registro_titulo">Crear cuenta</string>
+    <string name="registro_subtitulo">Regístrate para compartir tu ubicación en tiempo real</string>
+    <string name="campo_nombre">Nombre</string>
+    <string name="campo_identificacion">Número de identificación</string>
+    <string name="campo_correo">Correo electrónico</string>
+    <string name="campo_password">Contraseña</string>
+    <string name="campo_telefono">Teléfono</string>
+    <string name="btn_iniciar_sesion">Iniciar sesión</string>
+    <string name="btn_registrarse">Registrarse</string>
+    <string name="ir_a_registro">¿No tienes cuenta? Regístrate</string>
+    <string name="ir_a_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <!-- Descripciones de accesibilidad -->
+    <string name="cd_logo">Logo de la aplicación</string>
+    <string name="cd_mostrar_password">Mostrar contraseña</string>
+    <string name="cd_ocultar_password">Ocultar contraseña</string>
+
+    <!-- Errores -->
+    <string name="error_campos_vacios">Completa todos los campos</string>
+    <string name="error_correo_invalido">El correo no es válido</string>
+    <string name="error_password_corta">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_telefono_invalido">El teléfono debe tener al menos 7 dígitos</string>
+    <string name="error_identificacion_invalida">La identificación solo debe contener números</string>
+    <string name="error_correo_existe">Ya existe una cuenta con ese correo</string>
+    <string name="error_credenciales">Correo o contraseña incorrectos</string>
+    <string name="error_generico">Ocurrió un error, inténtalo de nuevo</string>
+
+    <!-- Pantalla temporal -->
+    <string name="sesion_iniciada">Sesión iniciada correctamente</string>
+    <string name="menu_cerrar_sesion">Cerrar sesión</string>
 </resources>
