@@ -24,16 +24,31 @@ import com.example.tallerfirebase.R
 import com.example.tallerfirebase.data.model.MapPoint
 import com.example.tallerfirebase.data.model.User
 import org.osmdroid.config.Configuration
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.tileprovider.tilesource.XYZTileSource
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.CopyrightOverlay
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.TilesOverlay
 
 private const val DEFAULT_ZOOM = 17.0
 private const val ME_ID = "me"
 private val DEFAULT_CENTER = GeoPoint(4.6286, -74.0646) // Pontificia Universidad Javeriana, Bogotá
+private const val MAP_ATTRIBUTION = "© OpenStreetMap contributors © CARTO"
+
+// Mapas de CARTO (datos de OpenStreetMap): gratis y sin API key. Uno claro y uno oscuro.
+private fun cartoTileSource(name: String, style: String) = XYZTileSource(
+    name, 0, 20, 256, ".png",
+    arrayOf(
+        "https://a.basemaps.cartocdn.com/rastertiles/$style/",
+        "https://b.basemaps.cartocdn.com/rastertiles/$style/",
+        "https://c.basemaps.cartocdn.com/rastertiles/$style/"
+    ),
+    MAP_ATTRIBUTION
+)
+
+private val LIGHT_TILES = cartoTileSource("CartoVoyager", "voyager")
+private val DARK_TILES = cartoTileSource("CartoDarkMatter", "dark_all")
 
 // Datos que necesita un marcador en el mapa
 private data class MarkerData(
@@ -78,11 +93,9 @@ fun OsmMap(
         }
     }
 
-    // Tema oscuro: invierte los colores del mapa
+    // Tema claro/oscuro: cambia el estilo del mapa
     LaunchedEffect(isDark) {
-        mapView.overlayManager.tilesOverlay.setColorFilter(
-            if (isDark) TilesOverlay.INVERT_COLORS else null
-        )
+        mapView.setTileSource(if (isDark) DARK_TILES else LIGHT_TILES)
         mapView.invalidate()
     }
 
@@ -130,10 +143,11 @@ fun OsmMap(
 private fun createMapView(context: Context): MapView {
     Configuration.getInstance().apply {
         load(context, context.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-        userAgentValue = context.packageName
+        userAgentValue = "TallerFirebasePUJ/1.0 (Android)"
     }
     return MapView(context).apply {
-        setTileSource(TileSourceFactory.MAPNIK)
+        setTileSource(LIGHT_TILES)
+        overlays.add(CopyrightOverlay(context))
         setMultiTouchControls(true)
         zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         controller.setZoom(DEFAULT_ZOOM)
