@@ -1,16 +1,15 @@
 package com.example.tallerfirebase.ui.navigation
 
-import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object LoginRoute : NavKey
+data object LoginRoute
 
 @Serializable
-data object RegisterRoute : NavKey
+data object RegisterRoute
 
 @Serializable
-data object MapRoute : NavKey
+data object MapRoute
 
 @Serializable
-data object ProfileRoute : NavKey
+data object ProfileRoute

@@ -20,7 +20,9 @@ data class MapUiState(
     val currentUser: User? = null,
     val onlineUsers: List<User> = emptyList(),
     val isTracking: Boolean = false,
-    val myLocation: MapPoint? = null
+    val myLocation: MapPoint? = null,
+    val myRoute: List<MapPoint> = emptyList(),
+    val otherRoutes: Map<String, List<MapPoint>> = emptyMap()
 ) {
     // Usuarios conectados distintos al usuario actual
     val otherUsers: List<User>
@@ -60,7 +62,27 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
             launch {
                 userRepository.observeOnlineUsers()
                     .catch { emit(emptyList()) }
-                    .collect { users -> _uiState.update { it.copy(onlineUsers = users) } }
+                    .collect { users ->
+                        _uiState.update { currentState ->
+                            val currentOnlineOtherUids = users.filter { it.uid != currentState.currentUser?.uid }.map { it.uid }.toSet()
+                            val newOtherRoutes = currentState.otherRoutes.filterKeys { it in currentOnlineOtherUids }.toMutableMap()
+
+                            users.filter { it.uid != currentState.currentUser?.uid }.forEach { user ->
+                                if (user.latitud != 0.0 || user.longitud != 0.0) {
+                                    val p = MapPoint(user.latitud, user.longitud)
+                                    val existing = newOtherRoutes[user.uid] ?: emptyList()
+                                    if (existing.lastOrNull() != p) {
+                                        newOtherRoutes[user.uid] = existing + p
+                                    }
+                                }
+                            }
+
+                            currentState.copy(
+                                onlineUsers = users,
+                                otherRoutes = newOtherRoutes
+                            )
+                        }
+                    }
             }
         }
     }
@@ -74,7 +96,18 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
         trackingJob = viewModelScope.launch {
             var markedConnected = false
             locationClient.locationUpdates().collect { location ->
-                _uiState.update { it.copy(myLocation = MapPoint(location.latitude, location.longitude)) }
+                val newPoint = MapPoint(location.latitude, location.longitude)
+                _uiState.update { currentState ->
+                    val updatedRoute = if (currentState.myRoute.lastOrNull() != newPoint) {
+                        currentState.myRoute + newPoint
+                    } else {
+                        currentState.myRoute
+                    }
+                    currentState.copy(
+                        myLocation = newPoint,
+                        myRoute = updatedRoute
+                    )
+                }
                 runCatching { userRepository.updateLocation(uid, location.latitude, location.longitude) }
                 // Se marca como conectado después de guardar la primera posición real
                 if (!markedConnected) {
@@ -89,7 +122,13 @@ class MapViewModel(application: Application) : AndroidViewModel(application) {
     fun stopTracking() {
         trackingJob?.cancel()
         trackingJob = null
-        _uiState.update { it.copy(isTracking = false, myLocation = null) }
+        _uiState.update { currentState ->
+            currentState.copy(
+                isTracking = false,
+                myLocation = null,
+                myRoute = emptyList()
+            )
+        }
         val uid = boundUid ?: return
         viewModelScope.launch { runCatching { userRepository.setConnected(uid, false) } }
     }

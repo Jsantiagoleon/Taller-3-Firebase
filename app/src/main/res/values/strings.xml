@@ -43,5 +43,13 @@
 
     <!-- Menú -->
     <string name="cd_menu">Más opciones</string>
+    <string name="menu_editar_perfil">Modificar perfil</string>
     <string name="menu_cerrar_sesion">Cerrar sesión</string>
+
+    <!-- Perfil -->
+    <string name="perfil_titulo">Modificar perfil</string>
+    <string name="perfil_subtitulo">Actualiza tu información personal</string>
+    <string name="btn_guardar_cambios">Guardar cambios</string>
+    <string name="perfil_actualizado_exito">Perfil actualizado correctamente</string>
+    <string name="campo_password_nueva">Nueva contraseña (opcional)</string>
 </resources>

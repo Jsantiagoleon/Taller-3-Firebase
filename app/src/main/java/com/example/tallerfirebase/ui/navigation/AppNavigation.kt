@@ -2,53 +2,70 @@ package com.example.tallerfirebase.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.ui.NavDisplay
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.tallerfirebase.ui.auth.AuthViewModel
 import com.example.tallerfirebase.ui.auth.LoginScreen
 import com.example.tallerfirebase.ui.auth.RegisterScreen
 import com.example.tallerfirebase.ui.map.MapScreen
+import com.example.tallerfirebase.ui.profile.ProfileScreen
 
 @Composable
 fun AppNavigation() {
     val authViewModel: AuthViewModel = viewModel()
-    val startRoute: NavKey = if (authViewModel.isLoggedIn()) MapRoute else LoginRoute
-    val backStack = rememberNavBackStack(startRoute)
+    val navController = rememberNavController()
+    val startDestination: Any = if (authViewModel.isLoggedIn()) MapRoute else LoginRoute
 
-    NavDisplay(
-        backStack = backStack,
-        onBack = { backStack.removeLastOrNull() },
-        entryProvider = entryProvider {
-            entry<LoginRoute> {
-                LoginScreen(
-                    viewModel = authViewModel,
-                    onLoginSuccess = { backStack.resetTo(MapRoute) },
-                    onGoToRegister = { backStack.add(RegisterRoute) }
-                )
-            }
-            entry<RegisterRoute> {
-                RegisterScreen(
-                    viewModel = authViewModel,
-                    onRegisterSuccess = { backStack.resetTo(MapRoute) },
-                    onBack = { backStack.removeLastOrNull() }
-                )
-            }
-            entry<MapRoute> {
-                MapScreen(
-                    onLogout = {
-                        authViewModel.logout()
-                        backStack.resetTo(LoginRoute)
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable<LoginRoute> {
+            LoginScreen(
+                viewModel = authViewModel,
+                onLoginSuccess = {
+                    navController.navigate(MapRoute) {
+                        popUpTo<LoginRoute> { inclusive = true }
                     }
-                )
-            }
+                },
+                onGoToRegister = {
+                    navController.navigate(RegisterRoute)
+                }
+            )
         }
-    )
-}
-
-// Deja la pila de navegación solo con la ruta indicada (para que "atrás" no regrese al login)
-private fun MutableList<NavKey>.resetTo(route: NavKey) {
-    add(route)
-    removeAll { it != route }
+        composable<RegisterRoute> {
+            RegisterScreen(
+                viewModel = authViewModel,
+                onRegisterSuccess = {
+                    navController.navigate(MapRoute) {
+                        popUpTo<LoginRoute> { inclusive = true }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable<MapRoute> {
+            MapScreen(
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(LoginRoute) {
+                        popUpTo<MapRoute> { inclusive = true }
+                    }
+                },
+                onNavigateToProfile = {
+                    navController.navigate(ProfileRoute)
+                }
+            )
+        }
+        composable<ProfileRoute> {
+            ProfileScreen(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
 }

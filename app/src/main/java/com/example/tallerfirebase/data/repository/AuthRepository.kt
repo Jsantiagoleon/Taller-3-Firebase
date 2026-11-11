@@ -40,6 +40,11 @@ class AuthRepository(
         auth.signInWithEmailAndPassword(correo, password).await()
     }
 
+    suspend fun updatePassword(newPassword: String) {
+        val user = auth.currentUser ?: throw IllegalStateException("Usuario no autenticado")
+        user.updatePassword(newPassword).await()
+    }
+
     fun logout() {
         auth.signOut()
     }

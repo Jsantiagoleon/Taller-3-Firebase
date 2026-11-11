@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.MenuOpen
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -44,6 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MapScreen(
     onLogout: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     viewModel: MapViewModel = viewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -66,7 +69,6 @@ fun MapScreen(
         viewModel.startTracking()
     }
 
-    // Solicitud del permiso de ubicación en tiempo de ejecución
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { result ->
@@ -101,6 +103,16 @@ fun MapScreen(
                             onDismissRequest = { menuExpanded = false }
                         ) {
                             DropdownMenuItem(
+                                text = { Text(stringResource(R.string.menu_editar_perfil)) },
+                                leadingIcon = {
+                                    Icon(Icons.Filled.Edit, contentDescription = null)
+                                },
+                                onClick = {
+                                    menuExpanded = false
+                                    onNavigateToProfile()
+                                }
+                            )
+                            DropdownMenuItem(
                                 text = { Text(stringResource(R.string.menu_cerrar_sesion)) },
                                 leadingIcon = {
                                     Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null)
@@ -125,7 +137,9 @@ fun MapScreen(
             OsmMap(
                 currentUser = state.currentUser,
                 myLocation = state.myLocation,
+                myRoute = state.myRoute,
                 otherUsers = state.otherUsers,
+                otherRoutes = state.otherRoutes,
                 modifier = Modifier.fillMaxSize()
             )
             OnlineUsersCard(

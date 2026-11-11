@@ -72,7 +72,27 @@ class UserRepository(
         ).await()
     }
 
+    suspend fun updateProfile(
+        uid: String,
+        nombre: String,
+        identificacion: String,
+        telefono: String,
+        fotoUrl: String? = null
+    ) {
+        val updates = mutableMapOf<String, Any>(
+            FIELD_NOMBRE to nombre,
+            FIELD_IDENTIFICACION to identificacion,
+            FIELD_TELEFONO to telefono
+        )
+        fotoUrl?.let { updates[FIELD_FOTO_URL] = it }
+        usersRef.child(uid).updateChildren(updates).await()
+    }
+
     companion object {
+        const val FIELD_NOMBRE = "nombre"
+        const val FIELD_IDENTIFICACION = "identificacion"
+        const val FIELD_TELEFONO = "telefono"
+        const val FIELD_FOTO_URL = "fotoUrl"
         const val FIELD_CONECTADO = "conectado"
         const val FIELD_LATITUD = "latitud"
         const val FIELD_LONGITUD = "longitud"
